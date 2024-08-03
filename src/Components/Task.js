@@ -1,36 +1,22 @@
 import React from 'react';
-import Action from './Action';
-import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, Button } from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-  task: {
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  actions: {
-    marginTop: theme.spacing(2),
-  },
-}));
+import ActionList from './ActionList';
+import ActionForm from './ActionForm';
 
 function Task({ task, onUpdateTask }) {
-  const classes = useStyles();
+  const handleAddAction = (newAction) => {
+    const updatedTask = {
+      ...task,
+      actions: [...task.actions, newAction]
+    };
+    onUpdateTask(task.id, updatedTask);
+  };
 
-  const handleActionUpdate = (actionId, updatedAction) => {
+  const handleUpdateAction = (actionId, updatedAction) => {
     const updatedActions = task.actions.map(action =>
       action.id === actionId ? updatedAction : action
     );
     onUpdateTask(task.id, { ...task, actions: updatedActions });
-  };
-
-  const handleAddAction = () => {
-    const newAction = {
-      id: Date.now().toString(),
-      title: 'New Action',
-      deadline: '',
-      status: 'not-started'
-    };
-    onUpdateTask(task.id, { ...task, actions: [...task.actions, newAction] });
   };
 
   const allActionsCompleted = task.actions.every(action => action.status === 'completed');
@@ -43,17 +29,11 @@ function Task({ task, onUpdateTask }) {
   };
 
   return (
-    <Paper className={classes.task} style={{ backgroundColor: getTaskColor() }}>
+    <Paper style={{ padding: '1rem', marginBottom: '1rem', backgroundColor: getTaskColor() }}>
       <Typography variant="h6">{task.title}</Typography>
       <Typography>Status: {taskStatus}</Typography>
-      <div className={classes.actions}>
-        {task.actions.map(action => (
-          <Action key={action.id} action={action} onUpdate={handleActionUpdate} />
-        ))}
-      </div>
-      <Button onClick={handleAddAction} color="primary">
-        Add Action
-      </Button>
+      <ActionList actions={task.actions} onUpdateAction={handleUpdateAction} />
+      <ActionForm onAddAction={handleAddAction} />
     </Paper>
   );
 }

@@ -1,32 +1,19 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, TextField, Button } from '@material-ui/core';
+import { Paper, Typography, Button, TextField } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-  action: {
-    padding: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(1),
-  },
-}));
-
-function Action({ action, onUpdate }) {
-  const classes = useStyles();
+function Action({ action, onUpdateAction }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(action.title);
   const [deadline, setDeadline] = useState(action.deadline);
+  const [doItOnDate, setDoItOnDate] = useState(action.doItOnDate);
 
   const handleStatusChange = () => {
     const newStatus = action.status === 'completed' ? 'in-progress' : 'completed';
-    onUpdate(action.id, { ...action, status: newStatus });
+    onUpdateAction(action.id, { ...action, status: newStatus });
   };
 
   const handleSave = () => {
-    onUpdate(action.id, { ...action, title, deadline });
+    onUpdateAction(action.id, { ...action, title, deadline, doItOnDate });
     setEditing(false);
   };
 
@@ -41,34 +28,42 @@ function Action({ action, onUpdate }) {
 
   if (editing) {
     return (
-      <Paper className={classes.action}>
-        <form className={classes.form}>
-          <TextField
-            label="Action Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <TextField
-            label="Deadline"
-            type="date"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
-        </form>
+      <Paper style={{ padding: '0.5rem', marginBottom: '0.5rem' }}>
+        <TextField
+          label="Action Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Deadline"
+          type="date"
+          value={deadline}
+          onChange={(e) => setDeadline(e.target.value)}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+        />
+        <TextField
+          label="Do it on"
+          type="date"
+          value={doItOnDate}
+          onChange={(e) => setDoItOnDate(e.target.value)}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+        />
+        <Button onClick={handleSave} color="primary">Save</Button>
       </Paper>
     );
   }
 
   return (
-    <Paper className={classes.action} style={{ backgroundColor: getBackgroundColor() }}>
+    <Paper style={{ padding: '0.5rem', marginBottom: '0.5rem', backgroundColor: getBackgroundColor() }}>
       <Typography variant="subtitle1">{action.title}</Typography>
       <Typography variant="body2">Deadline: {action.deadline}</Typography>
+      <Typography variant="body2">Do it on: {action.doItOnDate}</Typography>
       <Button onClick={handleStatusChange}>
         {action.status === 'completed' ? 'Mark as In Progress' : 'Mark as Complete'}
       </Button>
